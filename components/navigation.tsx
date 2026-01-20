@@ -79,7 +79,7 @@ export function Navigation() {
       <nav
         className={cn(
           "flex items-center gap-1 px-2 py-2 rounded-full border border-white/10 backdrop-blur-xl transition-all duration-300",
-          isScrolled ? "bg-black/80 shadow-lg shadow-black/20" : "bg-black/60"
+          isScrolled ? "bg-black/30 shadow-lg shadow-black/20" : "bg-black/60"
         )}
       >
         {/* Logo */}
@@ -96,7 +96,7 @@ export function Navigation() {
         </a>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-1 pe-2">
           {navLinks.map((link) => (
             <button
               key={link.name}
