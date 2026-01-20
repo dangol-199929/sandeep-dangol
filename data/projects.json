@@ -1,0 +1,46 @@
+[
+  {
+    "id": "1",
+    "title": "Revv Travels",
+    "description": "Tour Booking & Bike Rental platform for Spain-based travel company.",
+    "fullDescription": "Built an interactive platform for travel and bike rentals using Next.js and TypeScript. Delivered SEO optimization and design implementation, improving site visibility and user flow. Features include booking management, responsive design, and optimized performance.",
+    "image": "",
+    "tags": ["Next.js", "TypeScript", "SEO", "Responsive Design"],
+    "liveUrl": "#",
+    "githubUrl": "#",
+    "metrics": ["SEO optimized", "Improved user flow", "Spain market"]
+  },
+  {
+    "id": "2",
+    "title": "SILCRE TECH",
+    "description": "AI-Powered Medical Kit Scanning & Reporting system for Japan-based healthcare.",
+    "fullDescription": "Built a hospital testing system for scanning medical kits and generating AI-driven reports. Implemented camera functionality with react-webcam and managed state using Zustand. Integrated user management and displayed AI-generated reports on the frontend.",
+    "image": "",
+    "tags": ["React", "Zustand", "react-webcam", "AI Integration"],
+    "liveUrl": "#",
+    "githubUrl": "#",
+    "metrics": ["AI-driven reports", "Camera scanning", "Healthcare system"]
+  },
+  {
+    "id": "3",
+    "title": "BaseStation CRM",
+    "description": "Customer Relationship Management platform for US-based clients.",
+    "fullDescription": "Built frontend components with Next.js and SCSS for a CRM platform. Improved UI performance and streamlined API data handling. Focused on creating intuitive interfaces for managing customer relationships and business processes.",
+    "image": "",
+    "tags": ["Next.js", "SCSS", "REST API", "CRM"],
+    "liveUrl": "#",
+    "githubUrl": "#",
+    "metrics": ["Improved UI performance", "Streamlined API", "US market"]
+  },
+  {
+    "id": "4",
+    "title": "Koklass E-Commerce",
+    "description": "Multiple e-commerce platforms including KFC Nepal, Pizza World, and Indu Grocery.",
+    "fullDescription": "Contributed to the development of e-commerce platforms including KFC Nepal (Kiosk Web App), Pizza World, and Indu Grocery. Focused on responsive UI, API integration, and optimized user experience for the Nepal market.",
+    "image": "",
+    "tags": ["React", "E-Commerce", "API Integration", "Responsive UI"],
+    "liveUrl": "#",
+    "githubUrl": "#",
+    "metrics": ["Multiple platforms", "Nepal market", "Optimized UX"]
+  }
+]

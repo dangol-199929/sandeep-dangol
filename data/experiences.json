@@ -1,0 +1,34 @@
+[
+  {
+    "id": "1",
+    "title": "Frontend Web Developer",
+    "company": "E.K. Solutions Pvt. Ltd",
+    "period": "Aug 2021 - Aug 2025",
+    "description": "Developed scalable web apps with React.js, Next.js, and modern UI frameworks. Integrated RESTful APIs and leveraged AI tools like Cursor IDE and v0. Collaborated in agile sprints, code reviews, and Scrum planning. Ran performance experiments and optimizations based on user behavior.",
+    "side": "right"
+  },
+  {
+    "id": "2",
+    "title": "Web Developer Intern",
+    "company": "E.K. Solutions Pvt. Ltd",
+    "period": "June 2021 - Aug 2021",
+    "description": "Translated design mockups into responsive, pixel-accurate interfaces using HTML, CSS, and JavaScript. Worked closely with designers using Figma and Adobe XD. Learned collaborative development workflows using Git.",
+    "side": "left"
+  },
+  {
+    "id": "3",
+    "title": "BSc Computing",
+    "company": "IIMS (UCSI University)",
+    "period": "Sep 2019 - July 2023",
+    "description": "Bachelor of Science (Hons) Computing with 3.44 GPA. Dean's List recipient in 2019. Studied computer science fundamentals, software development, and modern web technologies.",
+    "side": "right"
+  },
+  {
+    "id": "4",
+    "title": "High School Diploma",
+    "company": "Trinity Int'l College",
+    "period": "2018",
+    "description": "Completed high school degree with focus on Computer Science. Built foundation in programming and computational thinking.",
+    "side": "left"
+  }
+]
