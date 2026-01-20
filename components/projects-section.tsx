@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ExternalLink, Github, X, ChevronLeft, ChevronRight, FolderKanban } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
+import { PRO } from "@/imageconfig"
+import Image from "next/image"
 interface Project {
   id: string
   title: string
@@ -26,6 +27,15 @@ function ProjectCard({
   onClick: () => void
   index: number
 }) {
+  const imageMap = {
+    'revv': PRO.revv,
+    'ban': PRO.ban,
+    'bs': PRO.bs,
+    'koklass': PRO.koklass
+  }
+
+  const imageSrc = imageMap[project.image as keyof typeof imageMap]
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -36,11 +46,12 @@ function ProjectCard({
       onClick={onClick}
     >
       <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
-        {project.image ? (
-          <img
-            src={project.image || "/placeholder.svg"}
+        {imageSrc ? (
+          <Image
+            src={imageSrc}
+            fill
             alt={project.title}
-            className="w-full h-full object-cover"
+            className="object-cover"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -81,6 +92,15 @@ function ProjectModal({
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const images = project.image ? [project.image] : []
 
+  const imageMap = {
+    'revv': PRO.revv,
+    'ban': PRO.ban,
+    'bs': PRO.bs,
+    'koklass': PRO.koklass
+  }
+
+  const imageSrc = imageMap[project.image as keyof typeof imageMap]
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -98,11 +118,12 @@ function ProjectModal({
       >
         {/* Image Section */}
         <div className="relative aspect-video bg-gradient-to-br from-gray-800 to-gray-900">
-          {project.image ? (
-            <img
-              src={project.image || "/placeholder.svg"}
+          {imageSrc ? (
+            <Image
+              src={imageSrc}
+              fill
+              className="object-contain"
               alt={project.title}
-              className="w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
