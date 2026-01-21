@@ -7,7 +7,7 @@ import Image from "next/image"
 import { ME } from "@/imageconfig"
 
 export function AboutSection() {
-  const [resumePath, setResumePath] = useState("/resume/resume.pdf")
+  const [resumePath, setResumePath] = useState("/resume/Resume.pdf")
 
   useEffect(() => {
     const fetchResumePath = async () => {

@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Download } from "lucide-react"
+import { Download, Loader2Icon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -16,7 +16,7 @@ const PDFViewerContent = dynamic(() => import("./pdf-viewer-content.tsx"), {
   ssr: false,
   loading: () => (
     <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500 mb-4"></div>
+      <Loader2Icon className="animate-spin text-emerald-500 rounded-full h-9 w-9  mb-4"></Loader2Icon>
       <p>Loading PDF viewer...</p>
     </div>
   ),

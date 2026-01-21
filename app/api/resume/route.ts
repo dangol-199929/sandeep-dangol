@@ -19,7 +19,7 @@ export async function GET() {
     const settings = JSON.parse(data)
     return NextResponse.json({ resumePath: settings.resumePath })
   } catch {
-    return NextResponse.json({ resumePath: "/resume/resume.pdf" })
+    return NextResponse.json({ resumePath: "/resume/Resume.pdf" })
   }
 }
 

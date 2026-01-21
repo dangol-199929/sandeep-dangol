@@ -19,7 +19,7 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("")
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false)
-  const [resumePath, setResumePath] = useState("/resume/resume.pdf")
+  const [resumePath, setResumePath] = useState("/resume/Resume.pdf")
 
   useEffect(() => {
     const handleScroll = () => {
