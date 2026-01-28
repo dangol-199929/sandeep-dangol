@@ -14,6 +14,14 @@ export const metadata: Metadata = {
     title: 'Sandeep Dangol - Frontend Web Developer',
     description: 'Graduate Software Engineer with 4+ years of experience in frontend development using React, Next.js, JavaScript, and TypeScript.',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sandeep Dangol - Frontend Web Developer',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
