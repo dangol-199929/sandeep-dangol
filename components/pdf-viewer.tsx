@@ -44,10 +44,11 @@ export function PDFViewer({ pdfUrl, isOpen, onClose }: PDFViewerProps) {
           {/* Download Button */}
           <Button
             asChild
-            className=" text-white rounded-full px-4 me-4"
+            size={'sm'}
+            className=" text-white rounded-full px-4 me-6"
           >
             <a href={pdfUrl} download="Sandeep_Dangol_Resume.pdf">
-              <Download className="h-4 w-4 mr-2" />
+              <Download className="h-4 w-4 " />
               Download
             </a>
           </Button>

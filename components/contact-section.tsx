@@ -42,7 +42,7 @@ export function ContactSection() {
   if (state.succeeded) {
     return (
       <section id="contact" className="py-20 md:py-32">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -53,7 +53,7 @@ export function ContactSection() {
             <span className="inline-block px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-gray-300 mb-6">
               {"Let's work together"}
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Get In Touch</h2>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">Get In Touch</h2>
             <div className="w-16 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 mx-auto rounded-full" />
           </motion.div>
 
@@ -66,7 +66,7 @@ export function ContactSection() {
               viewport={{ once: true }}
             >
               <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-                <h3 className="text-2xl font-bold text-white mb-8">Contact Information</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-8">Contact Information</h3>
 
                 <div className="space-y-6">
                   {contactInfo.map((item) => (
@@ -75,14 +75,14 @@ export function ContactSection() {
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-4 group"
+                      className="flex flex-col sm:flex-row sm:items-center gap-3 group"
                     >
                       <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
                         <item.icon className="w-5 h-5 text-emerald-400" />
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">{item.label}</p>
-                        <p className="text-white font-medium group-hover:text-emerald-400 transition-colors">
+                        <p className="text-white font-medium group-hover:text-emerald-400 transition-colors break-words">
                           {item.value}
                         </p>
                       </div>
@@ -139,7 +139,7 @@ export function ContactSection() {
 
   return (
     <section id="contact" className="py-20 md:py-32">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -150,7 +150,7 @@ export function ContactSection() {
           <span className="inline-block px-4 py-2 bg-white/5 border border-white/10 rounded-full text-sm text-gray-300 mb-6">
             {"Let's work together"}
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Get In Touch</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">Get In Touch</h2>
           <div className="w-16 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 mx-auto rounded-full" />
         </motion.div>
 
@@ -163,7 +163,7 @@ export function ContactSection() {
             viewport={{ once: true }}
           >
             <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-white mb-8">Contact Information</h3>
+              <h3 className="text-2xl sm:text-3xl font-bold text-white mb-8">Contact Information</h3>
 
               <div className="space-y-6">
                 {contactInfo.map((item) => (
@@ -172,14 +172,14 @@ export function ContactSection() {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-4 group"
+                    className="flex flex-col sm:flex-row sm:items-center gap-3 group"
                   >
                     <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
                       <item.icon className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">{item.label}</p>
-                      <p className="text-white font-medium group-hover:text-emerald-400 transition-colors">
+                      <p className="text-white font-medium group-hover:text-emerald-400 transition-colors break-words">
                         {item.value}
                       </p>
                     </div>

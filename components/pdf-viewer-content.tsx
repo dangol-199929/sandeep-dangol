@@ -99,7 +99,7 @@ export default function PDFViewerContent({ pdfUrl, onClose }: PDFViewerContentPr
         <div
           ref={containerRef}
           className="pdfobject-container w-full h-full"
-          style={{ minHeight: "900px" }}
+          style={{ minHeight: "78vh" }}
         />
 
       </div>
