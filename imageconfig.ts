@@ -1,4 +1,4 @@
-import og from "./public/og-image.png";
+import og from "./public/og.png";
 
 import me from "./public/me/pic.png";
 
