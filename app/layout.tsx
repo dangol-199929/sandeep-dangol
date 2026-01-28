@@ -6,6 +6,7 @@ import './globals.css'
 
 const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500", "700"], variable: "--font-inter" });
 
+
 export const metadata: Metadata = {
   title: 'Sandeep Dangol - Frontend Web Developer',
   description: 'Graduate Software Engineer with 4+ years of experience in frontend development using React, Next.js, JavaScript, and TypeScript. Building scalable, user-focused web applications.',
