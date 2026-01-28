@@ -42,7 +42,7 @@ export function ContactSection() {
   if (state.succeeded) {
     return (
       <section id="contact" className="py-20 md:py-32">
-        <div className="container mx-auto px-4 sm:px-6">
+        <div className="container mx-auto px-4 sm:px-6 overflow-x-hidden">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -65,7 +65,7 @@ export function ContactSection() {
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8">
                 <h3 className="text-2xl sm:text-3xl font-bold text-white mb-8">Contact Information</h3>
 
                 <div className="space-y-6">
@@ -138,7 +138,7 @@ export function ContactSection() {
   }
 
   return (
-    <section id="contact" className="py-20 md:py-32">
+    <section id="contact" className="py-20 md:py-32 overflow-x-hidden">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -31,7 +31,8 @@ function ProjectCard({
     'revv': PRO.revv,
     'ban': PRO.ban,
     'bs': PRO.bs,
-    'koklass': PRO.koklass
+    'koklass': PRO.koklass,
+    'assistant': PRO.assistant
   }
 
   const imageSrc = imageMap[project.image as keyof typeof imageMap]
@@ -96,7 +97,8 @@ function ProjectModal({
     'revv': PRO.revv,
     'ban': PRO.ban,
     'bs': PRO.bs,
-    'koklass': PRO.koklass
+    'koklass': PRO.koklass,
+    'assistant': PRO.assistant
   }
 
   const imageSrc = imageMap[project.image as keyof typeof imageMap]
@@ -122,7 +124,7 @@ function ProjectModal({
             <Image
               src={imageSrc}
               fill
-              className="object-contain"
+              className="object-cover"
               alt={project.title}
             />
           ) : (
@@ -151,7 +153,7 @@ function ProjectModal({
             {project.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-sm text-gray-300"
+                className="px-3 py-1 bg-white/5 border border-white/10 rounded-full h-auto text-sm text-gray-300"
               >
                 {tag}
               </span>
@@ -162,7 +164,7 @@ function ProjectModal({
           {project.metrics.length > 0 && (
             <div className="grid grid-cols-3 gap-4 mb-8">
               {project.metrics.map((metric) => (
-                <div key={metric} className="text-center p-4 bg-white/5 rounded-xl">
+                <div key={metric} className="text-center flex justify-center items-center p-4 bg-white/5 rounded-xl h-auto">
                   <p className="text-emerald-400 font-semibold">{metric}</p>
                 </div>
               ))}
