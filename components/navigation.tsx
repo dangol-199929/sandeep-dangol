@@ -69,6 +69,20 @@ export function Navigation() {
     setIsMobileMenuOpen(false)
   }
 
+  const handleResumeClick = () => {
+    // Close mobile menu if open
+    setIsMobileMenuOpen(false)
+
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      // On mobile: open resume in a new tab
+      window.open(resumePath, "_blank")
+      return
+    }
+
+    // On desktop: open in modal viewer
+    setIsResumeModalOpen(true)
+  }
+
   return (
     <header
       className={cn(
@@ -111,10 +125,7 @@ export function Navigation() {
               {link.name}
             </button>
           ))}
-          <Button
-            className="ml-2  text-white rounded-full px-6"
-            onClick={() => setIsResumeModalOpen(true)}
-          >
+          <Button className="ml-2  text-white rounded-full px-6" onClick={handleResumeClick}>
             Resume
           </Button>
         </div>
@@ -147,13 +158,7 @@ export function Navigation() {
                 {link.name}
               </button>
             ))}
-            <Button
-              className="mt-2 rounded-full"
-              onClick={() => {
-                setIsMobileMenuOpen(false)
-                setIsResumeModalOpen(true)
-              }}
-            >
+            <Button className="mt-2 rounded-full" onClick={handleResumeClick}>
               Resume
             </Button>
           </div>

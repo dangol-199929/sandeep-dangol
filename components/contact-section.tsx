@@ -4,7 +4,7 @@ import React from "react"
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Mail, Linkedin, Send } from "lucide-react"
+import { Mail, Linkedin, Send, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -16,12 +16,22 @@ const contactInfo = [
     label: "Email",
     value: "sandeepdangol1999sep29@gmail.com",
     href: "mailto:sandeepdangol1999sep29@gmail.com",
+    target: "_blank",
   },
   {
     icon: Linkedin,
     label: "LinkedIn",
     value: "linkedin.com/in/sandeep-dangol",
     href: "https://linkedin.com/in/sandeep-dangol",
+    target: "_blank",
+  },
+  {
+    icon: Download,
+    label: "Resume",
+    value: "Download Resume",
+    href: "/resume/Resume.pdf",
+    download: "Sandeep_Dangol_Resume.pdf",
+    target: "_self",
   },
 ]
 
@@ -73,8 +83,9 @@ export function ContactSection() {
                     <a
                       key={item.label}
                       href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      target={item.target}
+                      rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
+                      {...(item.download ? { download: item.download } : {})}
                       className="flex flex-col sm:flex-row sm:items-center gap-3 group"
                     >
                       <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
@@ -170,8 +181,9 @@ export function ContactSection() {
                   <a
                     key={item.label}
                     href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    target={item.target}
+                    rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
+                    {...(item.download ? { download: item.download } : {})}
                     className="flex flex-col sm:flex-row sm:items-center gap-3 group"
                   >
                     <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
