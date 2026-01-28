@@ -126,7 +126,7 @@ export default function AdminLoginPage() {
             </Button>
           </form>
 
-          <p className="text-center text-gray-500 text-xs mt-6">
+          <p className="text-center text-[transparent] text-xs mt-6">
             Default credentials: admin / portfolio2024
           </p>
         </div>
