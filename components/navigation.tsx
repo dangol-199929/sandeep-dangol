@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { PDFViewer } from "@/components/pdf-viewer"
+import { getResumePath } from "@/services"
 
 const navLinks = [
   { name: "About", href: "#about" },
@@ -43,22 +44,10 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Fetch resume path from settings
   useEffect(() => {
-    const fetchResumePath = async () => {
-      try {
-        const response = await fetch("/api/resume")
-        if (response.ok) {
-          const data = await response.json()
-          if (data.resumePath) {
-            setResumePath(data.resumePath)
-          }
-        }
-      } catch (error) {
-        // Use default path if fetch fails
-      }
-    }
-    fetchResumePath()
+    getResumePath()
+      .then(setResumePath)
+      .catch(() => { })
   }, [])
 
   const scrollToSection = (href: string) => {

@@ -3,15 +3,8 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Briefcase } from "lucide-react"
-
-interface Experience {
-  id: string
-  title: string
-  company: string
-  period: string
-  description: string
-  side: "left" | "right"
-}
+import { getExperiences } from "@/services"
+import type { Experience } from "@/services"
 
 function TimelineItem({
   experience,
@@ -89,21 +82,10 @@ export function ExperienceSection() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const fetchExperiences = async () => {
-      try {
-        const response = await fetch("/api/experiences")
-        if (response.ok) {
-          const data = await response.json()
-          setExperiences(data)
-        }
-      } catch (error) {
-        console.error("Failed to fetch experiences:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchExperiences()
+    getExperiences()
+      .then(setExperiences)
+      .catch(() => { })
+      .finally(() => setIsLoading(false))
   }, [])
 
   return (

@@ -2,21 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ExternalLink, Github, X, ChevronLeft, ChevronRight, FolderKanban } from "lucide-react"
+import { ExternalLink, Github, X, FolderKanban } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { PRO } from "@/imageconfig"
 import Image from "next/image"
-interface Project {
-  id: string
-  title: string
-  description: string
-  fullDescription: string
-  image: string
-  tags: string[]
-  liveUrl: string
-  githubUrl: string
-  metrics: string[]
-}
+import { getProjects } from "@/services"
+import type { Project } from "@/services"
 
 function ProjectCard({
   project,
@@ -209,21 +200,10 @@ export function ProjectsSection() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await fetch("/api/projects")
-        if (response.ok) {
-          const data = await response.json()
-          setProjects(data)
-        }
-      } catch (error) {
-        console.error("Failed to fetch projects:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchProjects()
+    getProjects()
+      .then(setProjects)
+      .catch(() => { })
+      .finally(() => setIsLoading(false))
   }, [])
 
   return (

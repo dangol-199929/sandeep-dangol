@@ -5,26 +5,15 @@ import { motion } from "framer-motion"
 import { MapPin, Briefcase } from "lucide-react"
 import Image from "next/image"
 import { ME } from "@/imageconfig"
+import { getResumePath } from "@/services"
 
 export function AboutSection() {
   const [resumePath, setResumePath] = useState("/resume/Resume.pdf")
 
   useEffect(() => {
-    const fetchResumePath = async () => {
-      try {
-        const response = await fetch("/api/resume")
-        if (response.ok) {
-          const data = await response.json()
-          if (data.resumePath) {
-            setResumePath(data.resumePath)
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch resume path:", error)
-      }
-    }
-
-    fetchResumePath()
+    getResumePath()
+      .then(setResumePath)
+      .catch(() => { })
   }, [])
   return (
     <section id="about" className="py-20 md:py-32">
@@ -56,7 +45,7 @@ export function AboutSection() {
             <div className="relative">
               <div className="aspect-[5/5] bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden border border-gray/10">
                 <div className="w-full h-full flex items-center justify-center relative">
-                <Image src={ME} fill alt='' className="object-cover" />
+                  <Image src={ME} fill alt='' className="object-cover" />
                 </div>
               </div>
               <div className="absolute bottom-4 left-4 right-4 px-4 py-3 bg-black/80 backdrop-blur-sm rounded-xl border border-white/10">

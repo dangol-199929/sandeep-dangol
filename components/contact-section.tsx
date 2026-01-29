@@ -1,39 +1,16 @@
 "use client"
 
 import React from "react"
-
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Mail, Linkedin, Send, Download } from "lucide-react"
+import { Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useForm, ValidationError } from "@formspree/react"
+import { getContactInfo } from "@/services"
 
-const contactInfo = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "sandeepdangol1999sep29@gmail.com",
-    href: "mailto:sandeepdangol1999sep29@gmail.com",
-    target: "_blank",
-  },
-  {
-    icon: Linkedin,
-    label: "LinkedIn",
-    value: "linkedin.com/in/sandeep-dangol",
-    href: "https://linkedin.com/in/sandeep-dangol",
-    target: "_blank",
-  },
-  {
-    icon: Download,
-    label: "Resume",
-    value: "Download Resume",
-    href: "/resume/Resume.pdf",
-    download: "Sandeep_Dangol_Resume.pdf",
-    target: "_self",
-  },
-]
+const contactInfo = getContactInfo()
 
 export function ContactSection() {
   const [state, handleSubmit] = useForm("mreeazrr")

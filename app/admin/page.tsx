@@ -25,27 +25,19 @@ import { FormField } from "@/components/admin/form-field"
 import { ImageUpload } from "@/components/admin/image-upload"
 import { TagsInput } from "@/components/admin/tags-input"
 import Link from "next/link"
-
-interface Project {
-  id: string
-  title: string
-  description: string
-  fullDescription: string
-  image: string
-  tags: string[]
-  liveUrl: string
-  githubUrl: string
-  metrics: string[]
-}
-
-interface Experience {
-  id: string
-  title: string
-  company: string
-  period: string
-  description: string
-  side: "left" | "right"
-}
+import {
+  getResumePath,
+  uploadResume,
+  getProjects,
+  getExperiences,
+  createProject,
+  updateProject,
+  deleteProject,
+  createExperience,
+  updateExperience,
+  deleteExperience,
+} from "@/services"
+import type { Project, Experience } from "@/services"
 
 type Tab = "projects" | "experience" | "resume"
 
@@ -83,18 +75,14 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setIsLoading(true)
     try {
-      const [projectsRes, experiencesRes, resumeRes] = await Promise.all([
-        fetch("/api/projects"),
-        fetch("/api/experiences"),
-        fetch("/api/resume"),
+      const [projectsData, experiencesData, resumeData] = await Promise.all([
+        getProjects().catch(() => []),
+        getExperiences().catch(() => []),
+        getResumePath().catch(() => ""),
       ])
-
-      if (projectsRes.ok) setProjects(await projectsRes.json())
-      if (experiencesRes.ok) setExperiences(await experiencesRes.json())
-      if (resumeRes.ok) {
-        const data = await resumeRes.json()
-        setResumePath(data.resumePath)
-      }
+      setProjects(projectsData)
+      setExperiences(experiencesData)
+      setResumePath(resumeData)
     } catch (error) {
       console.error("Error fetching data:", error)
     } finally {
@@ -147,18 +135,16 @@ export default function AdminDashboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
-                activeTab === tab.id
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${activeTab === tab.id
                   ? "bg-emerald-500 text-white"
                   : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
-              }`}
+                }`}
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
               {tab.count !== undefined && (
-                <span className={`px-2 py-0.5 rounded text-xs ${
-                  activeTab === tab.id ? "bg-white/20" : "bg-white/10"
-                }`}>
+                <span className={`px-2 py-0.5 rounded text-xs ${activeTab === tab.id ? "bg-white/20" : "bg-white/10"
+                  }`}>
                   {tab.count}
                 </span>
               )}
@@ -257,14 +243,10 @@ function ProjectsTab({
     if (!confirm("Are you sure you want to delete this project?")) return
 
     try {
-      const response = await fetch(`/api/projects?id=${id}`, { method: "DELETE" })
-      if (response.ok) {
-        showToast("Project deleted successfully", "success")
-        onRefresh()
-      } else {
-        showToast("Failed to delete project", "error")
-      }
-    } catch (error) {
+      await deleteProject(id)
+      showToast("Project deleted successfully", "success")
+      onRefresh()
+    } catch {
       showToast("Failed to delete project", "error")
     }
   }
@@ -355,14 +337,10 @@ function ExperienceTab({
     if (!confirm("Are you sure you want to delete this experience?")) return
 
     try {
-      const response = await fetch(`/api/experiences?id=${id}`, { method: "DELETE" })
-      if (response.ok) {
-        showToast("Experience deleted successfully", "success")
-        onRefresh()
-      } else {
-        showToast("Failed to delete experience", "error")
-      }
-    } catch (error) {
+      await deleteExperience(id)
+      showToast("Experience deleted successfully", "success")
+      onRefresh()
+    } catch {
       showToast("Failed to delete experience", "error")
     }
   }
@@ -450,21 +428,10 @@ function ResumeTab({
 
     setIsUploading(true)
     try {
-      const formData = new FormData()
-      formData.append("file", file)
-
-      const response = await fetch("/api/resume", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (response.ok) {
-        showToast("Resume uploaded successfully", "success")
-        onRefresh()
-      } else {
-        showToast("Failed to upload resume", "error")
-      }
-    } catch (error) {
+      await uploadResume(file)
+      showToast("Resume uploaded successfully", "success")
+      onRefresh()
+    } catch {
       showToast("Failed to upload resume", "error")
     } finally {
       setIsUploading(false)
@@ -494,11 +461,10 @@ function ResumeTab({
                   className="hidden"
                   disabled={isUploading}
                 />
-                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isUploading
+                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${isUploading
                     ? "bg-gray-600 text-gray-300 cursor-not-allowed"
                     : " text-white cursor-pointer"
-                }`}>
+                  }`}>
                   {isUploading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -559,24 +525,15 @@ function ProjectModal({
     setIsSaving(true)
 
     try {
-      const url = "/api/projects"
-      const method = project ? "PUT" : "POST"
-      const body = project ? { ...formData, id: project.id } : formData
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      })
-
-      if (response.ok) {
-        showToast(project ? "Project updated successfully" : "Project created successfully", "success")
-        onSave()
-        onClose()
+      if (project) {
+        await updateProject({ ...formData, id: project.id })
       } else {
-        showToast("Failed to save project", "error")
+        await createProject(formData)
       }
-    } catch (error) {
+      showToast(project ? "Project updated successfully" : "Project created successfully", "success")
+      onSave()
+      onClose()
+    } catch {
       showToast("Failed to save project", "error")
     } finally {
       setIsSaving(false)
@@ -729,24 +686,15 @@ function ExperienceModal({
     setIsSaving(true)
 
     try {
-      const url = "/api/experiences"
-      const method = experience ? "PUT" : "POST"
-      const body = experience ? { ...formData, id: experience.id } : formData
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      })
-
-      if (response.ok) {
-        showToast(experience ? "Experience updated successfully" : "Experience created successfully", "success")
-        onSave()
-        onClose()
+      if (experience) {
+        await updateExperience({ ...formData, id: experience.id })
       } else {
-        showToast("Failed to save experience", "error")
+        await createExperience(formData)
       }
-    } catch (error) {
+      showToast(experience ? "Experience updated successfully" : "Experience created successfully", "success")
+      onSave()
+      onClose()
+    } catch {
       showToast("Failed to save experience", "error")
     } finally {
       setIsSaving(false)

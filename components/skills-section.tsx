@@ -1,21 +1,9 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { getSkills } from "@/services"
 
-const skills = [
-  { name: "React", level: 95 },
-  { name: "Next.js", level: 90 },
-  { name: "JavaScript", level: 90 },
-  { name: "TypeScript", level: 88 },
-  { name: "Tailwind CSS", level: 92 },
-  { name: "Shadcn UI", level: 88 },
-  { name: "REST API", level: 85 },
-  { name: "HTML/CSS", level: 95 },
-  { name: "Git", level: 85 },
-  { name: "Agile/Scrum", level: 82 },
-  { name: "Docker", level: 65 },
-  { name: "Jest Testing", level: 70 },
-]
+const skills = getSkills()
 
 function SkillBar({ name, level, index }: { name: string; level: number; index: number }) {
   return (
