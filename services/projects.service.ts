@@ -1,12 +1,13 @@
 import type { Project } from "./types";
+import { apiUrl } from "./api";
 
-const API_BASE = "/api/projects";
+const PROJECTS_PATH = "/api/projects";
 
 /**
  * Fetches all projects.
  */
 export async function getProjects(): Promise<Project[]> {
-  const response = await fetch(API_BASE);
+  const response = await fetch(apiUrl(PROJECTS_PATH));
   if (!response.ok) {
     throw new Error("Failed to fetch projects");
   }
@@ -19,7 +20,7 @@ export async function getProjects(): Promise<Project[]> {
 export async function createProject(
   data: Omit<Project, "id">,
 ): Promise<Project> {
-  const response = await fetch(API_BASE, {
+  const response = await fetch(apiUrl(PROJECTS_PATH), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -39,7 +40,7 @@ export async function createProject(
  * Updates an existing project.
  */
 export async function updateProject(data: Project): Promise<Project> {
-  const response = await fetch(API_BASE, {
+  const response = await fetch(apiUrl(PROJECTS_PATH), {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -59,9 +60,12 @@ export async function updateProject(data: Project): Promise<Project> {
  * Deletes a project by id.
  */
 export async function deleteProject(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE}?id=${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
+  const response = await fetch(
+    `${apiUrl(PROJECTS_PATH)}?id=${encodeURIComponent(id)}`,
+    {
+      method: "DELETE",
+    },
+  );
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));

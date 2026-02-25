@@ -1,18 +1,20 @@
 "use client"
 
-import React from "react"
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useForm, ValidationError } from "@formspree/react"
-import { getContactInfo } from "@/services"
-
-const contactInfo = getContactInfo()
+import { getContactItems, contactItemsWithIcons } from "@/services"
+import type { ContactItem } from "@/services"
 
 export function ContactSection() {
+  const [contactItems, setContactItems] = useState<ContactItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
   const [state, handleSubmit] = useForm("mreeazrr")
   const [formData, setFormData] = useState({
     name: "",
@@ -20,6 +22,13 @@ export function ContactSection() {
     subject: "",
     message: "",
   })
+
+  useEffect(() => {
+    getContactItems()
+      .then((items) => setContactItems(contactItemsWithIcons(items)))
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load contact info"))
+      .finally(() => setLoading(false))
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -45,7 +54,6 @@ export function ContactSection() {
           </motion.div>
 
           <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            {/* Contact Info */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -54,9 +62,8 @@ export function ContactSection() {
             >
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8">
                 <h3 className="text-2xl sm:text-3xl font-bold text-white mb-8">Contact Information</h3>
-
                 <div className="space-y-6">
-                  {contactInfo.map((item) => (
+                  {contactItems.map((item) => (
                     <a
                       key={item.label}
                       href={item.href}
@@ -77,7 +84,6 @@ export function ContactSection() {
                     </a>
                   ))}
                 </div>
-
                 <div className="mt-8 pt-8 border-t border-white/10">
                   <h4 className="text-lg font-semibold text-white mb-4">Current Status</h4>
                   <div className="flex items-center gap-2">
@@ -90,7 +96,6 @@ export function ContactSection() {
               </div>
             </motion.div>
 
-            {/* Success Message */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -143,7 +148,6 @@ export function ContactSection() {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-          {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -153,28 +157,39 @@ export function ContactSection() {
             <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
               <h3 className="text-2xl sm:text-3xl font-bold text-white mb-8">Contact Information</h3>
 
-              <div className="space-y-6">
-                {contactInfo.map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    target={item.target}
-                    rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
-                    {...(item.download ? { download: item.download } : {})}
-                    className="flex flex-col sm:flex-row sm:items-center gap-3 group"
-                  >
-                    <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
-                      <item.icon className="w-5 h-5 text-emerald-400" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">{item.label}</p>
-                      <p className="text-white font-medium group-hover:text-emerald-400 transition-colors break-words">
-                        {item.value}
-                      </p>
-                    </div>
-                  </a>
-                ))}
-              </div>
+              {loading ? (
+                <div className="flex items-center gap-3 py-6">
+                  <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-gray-400">Loading contact info...</span>
+                </div>
+              ) : error ? (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-400 text-sm">
+                  {error}
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {contactItems.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      target={item.target}
+                      rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
+                      {...(item.download ? { download: item.download } : {})}
+                      className="flex flex-col sm:flex-row sm:items-center gap-3 group"
+                    >
+                      <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
+                        <item.icon className="w-5 h-5 text-emerald-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">{item.label}</p>
+                        <p className="text-white font-medium group-hover:text-emerald-400 transition-colors break-words">
+                          {item.value}
+                        </p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              )}
 
               <div className="mt-8 pt-8 border-t border-white/10">
                 <h4 className="text-lg font-semibold text-white mb-4">Current Status</h4>
@@ -188,7 +203,6 @@ export function ContactSection() {
             </div>
           </motion.div>
 
-          {/* Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -245,7 +259,7 @@ export function ContactSection() {
                     rows={5}
                     value={formData.message}
                     onChange={handleChange}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-fuchsia-500 resize-none"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-emerald-500/50 resize-none"
                   />
                   <ValidationError
                     prefix="Message"
@@ -258,7 +272,7 @@ export function ContactSection() {
                 <Button
                   type="submit"
                   disabled={state.submitting}
-                  className="w-full  text-white py-6"
+                  className="w-full text-white py-6"
                 >
                   {state.submitting ? (
                     <span className="flex items-center gap-2">
@@ -286,7 +300,7 @@ export function ContactSection() {
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
-                      <Send className="h-4 w-4" />
+                      <Send className="w-4 h-4" />
                       Send Message
                     </span>
                   )}

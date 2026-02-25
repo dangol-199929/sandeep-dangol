@@ -17,6 +17,8 @@ import {
   Home,
   X,
   Save,
+  User,
+  Mail,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/auth-context"
@@ -36,10 +38,16 @@ import {
   createExperience,
   updateExperience,
   deleteExperience,
+  getAbout,
+  updateAbout,
+  getContactItems,
+  updateContact,
+  getApiBaseUrl,
+  resolveApiAssetUrl,
 } from "@/services"
-import type { Project, Experience } from "@/services"
+import type { Project, Experience, About, ContactItemApi } from "@/services"
 
-type Tab = "projects" | "experience" | "resume"
+type Tab = "projects" | "experience" | "resume" | "about" | "contact"
 
 export default function AdminDashboard() {
   const { isAuthenticated, logout } = useAuth()
@@ -50,6 +58,8 @@ export default function AdminDashboard() {
   const [projects, setProjects] = useState<Project[]>([])
   const [experiences, setExperiences] = useState<Experience[]>([])
   const [resumePath, setResumePath] = useState("")
+  const [about, setAbout] = useState<About | null>(null)
+  const [contactItems, setContactItems] = useState<ContactItemApi[]>([])
 
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false)
   const [isExperienceModalOpen, setIsExperienceModalOpen] = useState(false)
@@ -75,14 +85,18 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setIsLoading(true)
     try {
-      const [projectsData, experiencesData, resumeData] = await Promise.all([
+      const [projectsData, experiencesData, resumeData, aboutData, contactData] = await Promise.all([
         getProjects().catch(() => []),
         getExperiences().catch(() => []),
         getResumePath().catch(() => ""),
+        getAbout().catch(() => null),
+        getContactItems().catch(() => []),
       ])
       setProjects(projectsData)
       setExperiences(experiencesData)
       setResumePath(resumeData)
+      setAbout(aboutData)
+      setContactItems(contactData)
     } catch (error) {
       console.error("Error fetching data:", error)
     } finally {
@@ -103,6 +117,8 @@ export default function AdminDashboard() {
     { id: "projects" as Tab, label: "Projects", icon: FolderKanban, count: projects.length },
     { id: "experience" as Tab, label: "Experience", icon: Briefcase, count: experiences.length },
     { id: "resume" as Tab, label: "Resume", icon: FileText },
+    { id: "about" as Tab, label: "About", icon: User },
+    { id: "contact" as Tab, label: "Contact", icon: Mail, count: contactItems.length },
   ]
 
   return (
@@ -136,8 +152,8 @@ export default function AdminDashboard() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${activeTab === tab.id
-                  ? "bg-emerald-500 text-white"
-                  : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                ? "bg-emerald-500 text-white"
+                : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                 }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -194,6 +210,22 @@ export default function AdminDashboard() {
             {activeTab === "resume" && (
               <ResumeTab
                 resumePath={resumePath}
+                onRefresh={fetchData}
+                showToast={showToast}
+              />
+            )}
+
+            {activeTab === "about" && (
+              <AboutTab
+                about={about}
+                onRefresh={fetchData}
+                showToast={showToast}
+              />
+            )}
+
+            {activeTab === "contact" && (
+              <ContactTab
+                items={contactItems}
                 onRefresh={fetchData}
                 showToast={showToast}
               />
@@ -279,7 +311,7 @@ function ProjectsTab({
               <div className="w-20 h-14 bg-gray-800 rounded-lg overflow-hidden flex-shrink-0">
                 {project.image ? (
                   <img
-                    src={project.image || "/placeholder.svg"}
+                    src={resolveApiAssetUrl(project.image, getApiBaseUrl()) || "/placeholder.svg"}
                     alt={project.title}
                     className="w-full h-full object-cover"
                   />
@@ -462,8 +494,8 @@ function ResumeTab({
                   disabled={isUploading}
                 />
                 <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${isUploading
-                    ? "bg-gray-600 text-gray-300 cursor-not-allowed"
-                    : " text-white cursor-pointer"
+                  ? "bg-gray-600 text-gray-300 cursor-not-allowed"
+                  : " text-white cursor-pointer"
                   }`}>
                   {isUploading ? (
                     <>
@@ -490,6 +522,270 @@ function ResumeTab({
               )}
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// About Tab Component
+function AboutTab({
+  about,
+  onRefresh,
+  showToast,
+}: {
+  about: About | null
+  onRefresh: () => void
+  showToast: (message: string, type: "success" | "error") => void
+}) {
+  const [formData, setFormData] = useState<About>({
+    name: about?.name ?? "",
+    email: about?.email ?? "",
+    education: about?.education ?? "",
+    availability: about?.availability ?? "",
+    bio: Array.isArray(about?.bio) ? [...about.bio] : [],
+    image: about?.image ?? "",
+  })
+  const [isSaving, setIsSaving] = useState(false)
+  const [bioText, setBioText] = useState(about?.bio?.join("\n") ?? "")
+
+  useEffect(() => {
+    if (about) {
+      setFormData({
+        name: about.name,
+        email: about.email,
+        education: about.education,
+        availability: about.availability,
+        bio: Array.isArray(about.bio) ? [...about.bio] : [],
+        image: about.image,
+      })
+      setBioText(Array.isArray(about.bio) ? about.bio.join("\n") : "")
+    }
+  }, [about])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const bio = bioText
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean)
+    const payload: About = { ...formData, bio }
+    setIsSaving(true)
+    try {
+      await updateAbout(payload)
+      showToast("About updated successfully", "success")
+      onRefresh()
+    } catch {
+      showToast("Failed to update about", "error")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (about === null && !formData.name && !formData.email) {
+    return (
+      <div>
+        <h2 className="text-2xl font-bold text-white mb-6">About</h2>
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-6 py-4 text-center">
+          <p className="text-red-400 mb-4">Failed to load about content.</p>
+          <Button onClick={onRefresh} variant="outline" className="border-white/10 text-gray-300">
+            Retry
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-white mb-6">About</h2>
+      <form onSubmit={handleSubmit} className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-6">
+        <FormField
+          label="Name"
+          id="about-name"
+          value={formData.name}
+          onChange={(v) => setFormData({ ...formData, name: v })}
+          placeholder="Your name"
+        />
+        <FormField
+          label="Email"
+          id="about-email"
+          type="email"
+          value={formData.email}
+          onChange={(v) => setFormData({ ...formData, email: v })}
+          placeholder="your@email.com"
+        />
+        <FormField
+          label="Education"
+          id="about-education"
+          value={formData.education}
+          onChange={(v) => setFormData({ ...formData, education: v })}
+          placeholder="e.g. BSc Computing (UCSI University)"
+        />
+        <FormField
+          label="Availability"
+          id="about-availability"
+          value={formData.availability}
+          onChange={(v) => setFormData({ ...formData, availability: v })}
+          placeholder="e.g. Open to opportunities"
+        />
+        <div>
+          <label htmlFor="about-bio" className="block text-sm font-medium text-gray-300 mb-2">
+            Bio (one paragraph per line)
+          </label>
+          <textarea
+            id="about-bio"
+            rows={6}
+            value={bioText}
+            onChange={(e) => setBioText(e.target.value)}
+            className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-gray-500 focus:border-emerald-500 focus:outline-none"
+            placeholder="Paragraph 1&#10;Paragraph 2&#10;..."
+          />
+        </div>
+        <ImageUpload
+          label="Profile image"
+          value={formData.image}
+          onChange={(path) => setFormData({ ...formData, image: path })}
+        />
+        <Button type="submit" disabled={isSaving} className=" text-white">
+          {isSaving ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4 mr-2" />
+              Save About
+            </>
+          )}
+        </Button>
+      </form>
+    </div>
+  )
+}
+
+// Contact Tab Component
+function ContactTab({
+  items,
+  onRefresh,
+  showToast,
+}: {
+  items: ContactItemApi[]
+  onRefresh: () => void
+  showToast: (message: string, type: "success" | "error") => void
+}) {
+  const [localItems, setLocalItems] = useState<ContactItemApi[]>([])
+  const [isSaving, setIsSaving] = useState(false)
+
+  useEffect(() => {
+    setLocalItems(items.length ? items.map((i) => ({ ...i })) : [])
+  }, [items])
+
+  const addItem = () => {
+    setLocalItems((prev) => [...prev, { label: "", value: "", href: "", target: "_blank" }])
+  }
+
+  const removeItem = (index: number) => {
+    setLocalItems((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const updateItem = (index: number, field: keyof ContactItemApi, value: string) => {
+    setLocalItems((prev) => {
+      const next = [...prev]
+      next[index] = { ...next[index], [field]: value }
+      return next
+    })
+  }
+
+  const handleSave = async () => {
+    const valid = localItems.every((i) => i.label?.trim() && i.value?.trim() && i.href?.trim())
+    if (!valid) {
+      showToast("Each item needs label, value, and href", "error")
+      return
+    }
+    setIsSaving(true)
+    try {
+      await updateContact(localItems)
+      showToast("Contact info updated successfully", "success")
+      onRefresh()
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Failed to update contact", "error")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-white mb-6">Contact Information</h2>
+      <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4">
+        {localItems.map((item, index) => (
+          <div key={index} className="flex flex-wrap items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
+            <input
+              type="text"
+              placeholder="Label (e.g. Email)"
+              value={item.label}
+              onChange={(e) => updateItem(index, "label", e.target.value)}
+              className="flex-1 min-w-[80px] px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm placeholder:text-gray-500"
+            />
+            <input
+              type="text"
+              placeholder="Value / display text"
+              value={item.value}
+              onChange={(e) => updateItem(index, "value", e.target.value)}
+              className="flex-1 min-w-[100px] px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm placeholder:text-gray-500"
+            />
+            <input
+              type="text"
+              placeholder="href (URL or mailto:)"
+              value={item.href}
+              onChange={(e) => updateItem(index, "href", e.target.value)}
+              className="flex-1 min-w-[120px] px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm placeholder:text-gray-500"
+            />
+            <input
+              type="text"
+              placeholder="target (_blank)"
+              value={item.target ?? ""}
+              onChange={(e) => updateItem(index, "target", e.target.value)}
+              className="w-24 px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm placeholder:text-gray-500"
+            />
+            <input
+              type="text"
+              placeholder="download (filename)"
+              value={item.download ?? ""}
+              onChange={(e) => updateItem(index, "download", e.target.value)}
+              className="w-32 px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-sm placeholder:text-gray-500"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => removeItem(index)}
+              className="border-red-500/30 text-red-400 hover:bg-red-500/10 shrink-0"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        ))}
+        <div className="flex gap-3 pt-2">
+          <Button type="button" onClick={addItem} variant="outline" className="border-white/10 text-gray-300">
+            <Plus className="w-4 h-4 mr-2" />
+            Add item
+          </Button>
+          <Button type="button" onClick={handleSave} disabled={isSaving} className=" text-white">
+            {isSaving ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Save Contact
+              </>
+            )}
+          </Button>
         </div>
       </div>
     </div>

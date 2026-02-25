@@ -5,16 +5,60 @@ import { motion } from "framer-motion"
 import { MapPin, Briefcase } from "lucide-react"
 import Image from "next/image"
 import { ME } from "@/imageconfig"
-import { getResumePath } from "@/services"
+import { getAbout, getApiBaseUrl, resolveApiAssetUrl } from "@/services"
+import type { About } from "@/services"
+
+const DEFAULT_ABOUT: About = {
+  name: "",
+  email: "",
+  education: "",
+  availability: "",
+  bio: [],
+  image: "",
+}
 
 export function AboutSection() {
-  const [resumePath, setResumePath] = useState("/resume/Resume.pdf")
+  const [about, setAbout] = useState<About | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    getResumePath()
-      .then(setResumePath)
-      .catch(() => { })
+    getAbout()
+      .then(setAbout)
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
+      .finally(() => setLoading(false))
   }, [])
+
+  const data = about ?? DEFAULT_ABOUT
+  const imageSrc = data.image
+    ? resolveApiAssetUrl(data.image, getApiBaseUrl())
+    : null
+
+  if (loading) {
+    return (
+      <section id="about" className="py-20 md:py-32">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            <p className="mt-4 text-gray-400">Loading about...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section id="about" className="py-20 md:py-32">
+        <div className="container mx-auto px-6">
+          <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-6 py-4 text-center">
+            <p className="text-red-400">{error}</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section id="about" className="py-20 md:py-32">
       <div className="container mx-auto px-6">
@@ -35,7 +79,6 @@ export function AboutSection() {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Image */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -45,19 +88,28 @@ export function AboutSection() {
             <div className="relative">
               <div className="aspect-[5/5] bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden border border-gray/10">
                 <div className="w-full h-full flex items-center justify-center relative">
-                  <Image src={ME} fill alt='' className="object-cover" />
+                  {imageSrc ? (
+                    <img
+                      src={imageSrc}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Image src={ME} fill alt="" className="object-cover" />
+                  )}
                 </div>
               </div>
               <div className="absolute bottom-4 left-4 right-4 px-4 py-3 bg-black/80 backdrop-blur-sm rounded-xl border border-white/10">
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-sm text-gray-300">Available for work</span>
+                  <span className="text-sm text-gray-300">
+                    {data.availability || "Available for work"}
+                  </span>
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Content */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -66,48 +118,53 @@ export function AboutSection() {
           >
             <div className="bg-white/5 border border-white/10 rounded-2xl p-8 h-full">
               <div className="space-y-6 text-gray-300 leading-relaxed mb-8">
-                <p>
-                  {"Graduate Software Engineer with 4+ years of experience in frontend development using React, Next.js, JavaScript, and TypeScript. Experienced in building scalable, user-focused web applications."}
-                </p>
-                <p>
-                  {"I've collaborated with product managers, designers, and engineers in agile environments, optimizing performance through experimentation and delivering high-quality features in fast-moving, global teams."}
-                </p>
-                <p>
-                  {"I leverage AI-assisted tools including GitHub Copilot-style workflows (Cursor IDE, v0) to improve development productivity while maintaining code quality. I'm motivated by continuous learning, customer feedback, and building intuitive digital experiences."}
-                </p>
+                {data.bio.length > 0 ? (
+                  data.bio.map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))
+                ) : (
+                  <>
+                    <p>
+                      Graduate Software Engineer with 4+ years of experience in frontend development using React, Next.js, JavaScript, and TypeScript.
+                    </p>
+                    <p>
+                      I collaborate with product managers, designers, and engineers in agile environments, delivering high-quality features in fast-moving teams.
+                    </p>
+                  </>
+                )}
               </div>
 
               <div className="grid sm:grid-cols-2 gap-6 mb-8">
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Name</p>
-                  <p className="text-white font-medium">Sandeep Dangol</p>
+                  <p className="text-white font-medium">{data.name || "—"}</p>
                 </div>
                 <div className="truncate">
                   <p className="text-sm text-gray-500 mb-1">Email</p>
-                  <a className="text-white font-medium" aria-label="Email" title="sandeepdangol1999sep29@gmail.com" href="mailto:sandeepdangol1999sep29@gmail.com">sandeepdangol1999sep29@gmail.com</a>
+                  <a
+                    className="text-white font-medium"
+                    aria-label="Email"
+                    title={data.email}
+                    href={data.email ? `mailto:${data.email}` : "#"}
+                  >
+                    {data.email || "—"}
+                  </a>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Education</p>
                   <p className="text-white font-medium flex items-center gap-2">
                     <MapPin size={16} className="text-gray-500" />
-                    BSc Computing (UCSI University)
+                    {data.education || "—"}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Availability</p>
                   <p className="text-green-400 font-medium flex items-center gap-2">
                     <Briefcase size={16} />
-                    Open to opportunities
+                    {data.availability || "Open to opportunities"}
                   </p>
                 </div>
               </div>
-
-              {/* <Button asChild className="bg-white/10 hover:bg-white/20 text-white border border-white/10">
-                <a href={resumePath} target="_blank" rel="noopener noreferrer" download>
-                  <Download className="mr-2 h-4 w-4" />
-                  Download Resume
-                </a>
-              </Button> */}
             </div>
           </motion.div>
         </div>

@@ -1,10 +1,8 @@
 "use client"
 
-import React from "react"
-
-import { useState, useRef } from "react"
-import { Upload, X, ImageIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import React, { useState, useRef, useMemo } from "react"
+import { X, ImageIcon } from "lucide-react"
+import { uploadImage, isAllowedImageType, resolveUploadUrl } from "@/services"
 
 interface ImageUploadProps {
   value: string
@@ -14,50 +12,51 @@ interface ImageUploadProps {
 
 export function ImageUpload({ value, onChange, label = "Project Screenshot" }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
-  const [preview, setPreview] = useState<string>(value)
+  const [uploadError, setUploadError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const displayUrl = useMemo(() => {
+    if (!value) return ""
+    return resolveUploadUrl(value)
+  }, [value])
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Show preview immediately
+    setUploadError(null)
+    if (!isAllowedImageType(file)) {
+      setUploadError("Only JPEG, PNG, WebP, and GIF are allowed.")
+      return
+    }
+
     const reader = new FileReader()
     reader.onload = (event) => {
-      setPreview(event.target?.result as string)
+      setPreviewBlob(event.target?.result as string)
     }
     reader.readAsDataURL(file)
 
-    // Upload file
     setIsUploading(true)
     try {
-      const formData = new FormData()
-      formData.append("file", file)
-
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        onChange(data.path)
-        setPreview(data.path)
-      } else {
-        console.error("Upload failed")
-        setPreview("")
-      }
-    } catch (error) {
-      console.error("Upload error:", error)
-      setPreview("")
+      const { path } = await uploadImage(file)
+      onChange(path)
+      setPreviewBlob(null)
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed")
+      setPreviewBlob(null)
     } finally {
       setIsUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ""
     }
   }
 
+  const [previewBlob, setPreviewBlob] = useState<string | null>(null)
+  const previewSrc = previewBlob || displayUrl
+
   const handleRemove = () => {
     onChange("")
-    setPreview("")
+    setPreviewBlob(null)
+    setUploadError(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
@@ -66,11 +65,11 @@ export function ImageUpload({ value, onChange, label = "Project Screenshot" }: I
   return (
     <div>
       <label className="block text-sm font-medium text-gray-300 mb-2">{label}</label>
-      
-      {preview ? (
+
+      {previewSrc ? (
         <div className="relative rounded-lg overflow-hidden border border-white/10">
           <img
-            src={preview || "/placeholder.svg"}
+            src={previewSrc}
             alt="Preview"
             className="w-full h-48 object-cover"
           />
@@ -85,7 +84,7 @@ export function ImageUpload({ value, onChange, label = "Project Screenshot" }: I
         </div>
       ) : (
         <div
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => !isUploading && fileInputRef.current?.click()}
           className="border-2 border-dashed border-white/10 rounded-lg p-8 text-center cursor-pointer hover:border-emerald-500/50 transition-colors"
         >
           {isUploading ? (
@@ -99,18 +98,23 @@ export function ImageUpload({ value, onChange, label = "Project Screenshot" }: I
                 <ImageIcon className="w-6 h-6 text-gray-400" />
               </div>
               <span className="text-gray-400 text-sm">Click to upload image</span>
-              <span className="text-gray-500 text-xs">PNG, JPG, WebP up to 10MB</span>
+              <span className="text-gray-500 text-xs">PNG, JPG, WebP, GIF</span>
             </div>
           )}
         </div>
       )}
-      
+
+      {uploadError && (
+        <p className="mt-2 text-sm text-red-400">{uploadError}</p>
+      )}
+
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp,image/gif"
         onChange={handleFileSelect}
         className="hidden"
+        aria-label="Upload image"
       />
     </div>
   )

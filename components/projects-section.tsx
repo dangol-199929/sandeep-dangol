@@ -1,13 +1,31 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ExternalLink, Github, X, FolderKanban } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { PRO } from "@/imageconfig"
 import Image from "next/image"
-import { getProjects } from "@/services"
+import { getProjects, getApiBaseUrl, resolveApiAssetUrl } from "@/services"
 import type { Project } from "@/services"
+
+const LEGACY_IMAGE_KEYS = ["revv", "ban", "bs", "koklass", "assistant"] as const
+const imageMap: Record<(typeof LEGACY_IMAGE_KEYS)[number], typeof PRO.revv> = {
+  revv: PRO.revv,
+  ban: PRO.ban,
+  bs: PRO.bs,
+  koklass: PRO.koklass,
+  assistant: PRO.assistant,
+}
+
+function useProjectImageSrc(image: string): { type: "static"; src: typeof PRO.revv } | { type: "url"; src: string } | null {
+  return useMemo(() => {
+    if (!image) return null
+    const legacy = imageMap[image as keyof typeof imageMap]
+    if (legacy) return { type: "static", src: legacy }
+    return { type: "url", src: resolveApiAssetUrl(image, getApiBaseUrl()) }
+  }, [image])
+}
 
 function ProjectCard({
   project,
@@ -18,15 +36,7 @@ function ProjectCard({
   onClick: () => void
   index: number
 }) {
-  const imageMap = {
-    'revv': PRO.revv,
-    'ban': PRO.ban,
-    'bs': PRO.bs,
-    'koklass': PRO.koklass,
-    'assistant': PRO.assistant
-  }
-
-  const imageSrc = imageMap[project.image as keyof typeof imageMap]
+  const imageSrc = useProjectImageSrc(project.image)
 
   return (
     <motion.div
@@ -39,12 +49,20 @@ function ProjectCard({
     >
       <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
         {imageSrc ? (
-          <Image
-            src={imageSrc}
-            fill
-            alt={project.title}
-            className="object-cover"
-          />
+          imageSrc.type === "static" ? (
+            <Image
+              src={imageSrc.src}
+              fill
+              alt={project.title}
+              className="object-cover"
+            />
+          ) : (
+            <img
+              src={imageSrc.src}
+              alt={project.title}
+              className="w-full h-full object-cover"
+            />
+          )
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <div className="text-center text-gray-500">
@@ -81,18 +99,7 @@ function ProjectModal({
   project: Project
   onClose: () => void
 }) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const images = project.image ? [project.image] : []
-
-  const imageMap = {
-    'revv': PRO.revv,
-    'ban': PRO.ban,
-    'bs': PRO.bs,
-    'koklass': PRO.koklass,
-    'assistant': PRO.assistant
-  }
-
-  const imageSrc = imageMap[project.image as keyof typeof imageMap]
+  const imageSrc = useProjectImageSrc(project.image)
 
   return (
     <motion.div
@@ -112,12 +119,20 @@ function ProjectModal({
         {/* Image Section */}
         <div className="relative aspect-video bg-gradient-to-br from-gray-800 to-gray-900">
           {imageSrc ? (
-            <Image
-              src={imageSrc}
-              fill
-              className="object-cover"
-              alt={project.title}
-            />
+            imageSrc.type === "static" ? (
+              <Image
+                src={imageSrc.src}
+                fill
+                className="object-cover"
+                alt={project.title}
+              />
+            ) : (
+              <img
+                src={imageSrc.src}
+                alt={project.title}
+                className="w-full h-full object-cover"
+              />
+            )
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <FolderKanban className="w-16 h-16 text-gray-600" />

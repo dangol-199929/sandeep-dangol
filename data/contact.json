@@ -1,0 +1,21 @@
+[
+  {
+    "label": "Email",
+    "value": "sandeepdangol1999sep29@gmail.com",
+    "href": "mailto:sandeepdangol1999sep29@gmail.com",
+    "target": "_blank"
+  },
+  {
+    "label": "LinkedIn",
+    "value": "linkedin.com/in/sandeep-dangol",
+    "href": "https://linkedin.com/in/sandeep-dangol",
+    "target": "_blank"
+  },
+  {
+    "label": "Resume",
+    "value": "Download Resume",
+    "href": "/resume/Resume.pdf",
+    "target": "_self",
+    "download": "Sandeep_Dangol_Resume.pdf"
+  }
+]
