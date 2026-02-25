@@ -543,7 +543,7 @@ function AboutTab({
     email: about?.email ?? "",
     education: about?.education ?? "",
     availability: about?.availability ?? "",
-    bio: Array.isArray(about?.bio) ? [...about.bio] : [],
+    bio: about && Array.isArray(about.bio) ? [...about.bio] : [],
     image: about?.image ?? "",
   })
   const [isSaving, setIsSaving] = useState(false)

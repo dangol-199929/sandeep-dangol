@@ -8,7 +8,7 @@ interface FormFieldProps {
   id: string
   value: string
   onChange: (value: string) => void
-  type?: "text" | "url" | "textarea"
+  type?: "text" | "url" | "email" | "textarea"
   placeholder?: string
   required?: boolean
   rows?: number
