@@ -36,7 +36,6 @@ export function FormField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          required={required}
           rows={rows}
           className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-emerald-500 resize-none"
         />
@@ -47,7 +46,6 @@ export function FormField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          required={required}
           className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-emerald-500"
         />
       )}
