@@ -99,5 +99,29 @@
       "Optimized UX for Nepal market",
       "Integrated key backend workflows"
     ]
+  },
+  {
+    "id": "6",
+    "title": "Portfolio 2025",
+    "description": "Modern personal portfolio with admin dashboard, API-driven content, and S3-ready image uploads.",
+    "fullDescription": "A full-stack portfolio built with Next.js 16, React 19, and TypeScript. Features a public site (About, Experience, Projects, Contact) and a protected admin dashboard for editing content. About and Contact sections are powered by GET/PUT APIs with typed services and robust error handling. Project and profile images use a unified upload flow that supports both relative paths and absolute URLs (e.g. S3). The frontend uses a shared fetchJson helper with timeout and error parsing, and resolveApiAssetUrl for display across same-origin and cross-origin APIs. Formspree handles the contact form; resume and project CRUD use the same API layer. Built with Framer Motion, Tailwind CSS, and a modular service architecture.",
+    "image": "",
+    "tags": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Admin Dashboard",
+      "REST API",
+      "Tailwind CSS",
+      "Framer Motion",
+      "Image Upload"
+    ],
+    "liveUrl": "#",
+    "githubUrl": "#",
+    "metrics": [
+      "API-driven About, Contact & project content",
+      "Admin CRUD for projects, experience, resume & media",
+      "Unified upload & URL handling for local and S3"
+    ]
   }
 ]

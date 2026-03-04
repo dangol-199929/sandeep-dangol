@@ -92,7 +92,7 @@ export function AboutSection() {
                     <img
                       src={imageSrc}
                       alt=""
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                     />
                   ) : (
                     <Image src={ME} fill alt="" className="object-cover" />
