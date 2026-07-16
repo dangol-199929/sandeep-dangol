@@ -4,6 +4,7 @@ import {
   apiUrl,
   fetchJson,
   fetchJsonWithFallback,
+  fetchJsonWithFallbackResult,
   getApiBaseUrl,
   resolveApiAssetUrl,
 } from "./api";
@@ -16,12 +17,15 @@ export const DEFAULT_RESUME_PATH = "/resume/Resume.pdf";
  * Returns a URL suitable for use in href (resolves relative path when API is cross-origin).
  */
 export async function getResumePath(): Promise<string> {
-  const data = await fetchJsonWithFallback<ResumeResponse>(
+  const { data, usedFallback } = await fetchJsonWithFallbackResult<ResumeResponse>(
     apiUrl(RESUME_PATH),
     settingsFallback,
     { fallbackLabel: "resume settings" },
   );
   const path = data.resumePath ?? DEFAULT_RESUME_PATH;
+  if (usedFallback) {
+    return path;
+  }
   return resolveApiAssetUrl(path, getApiBaseUrl());
 }
 

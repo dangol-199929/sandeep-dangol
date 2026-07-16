@@ -102,6 +102,11 @@ export interface FetchJsonWithFallbackOptions extends FetchJsonOptions {
   fallbackLabel?: string;
 }
 
+export interface FetchJsonWithFallbackResult<T> {
+  data: T;
+  usedFallback: boolean;
+}
+
 /**
  * Fetch JSON from the API and fall back to local data when the request fails.
  * This is intended for read-only content so the public site can still render
@@ -112,10 +117,23 @@ export async function fetchJsonWithFallback<T>(
   fallbackData: T,
   options: FetchJsonWithFallbackOptions = {},
 ): Promise<T> {
+  const result = await fetchJsonWithFallbackResult(url, fallbackData, options);
+  return result.data;
+}
+
+/**
+ * Fetch JSON from the API and also report whether local fallback data was used.
+ */
+export async function fetchJsonWithFallbackResult<T>(
+  url: string,
+  fallbackData: T,
+  options: FetchJsonWithFallbackOptions = {},
+): Promise<FetchJsonWithFallbackResult<T>> {
   const { fallbackLabel, ...fetchOptions } = options;
 
   try {
-    return await fetchJson<T>(url, fetchOptions);
+    const data = await fetchJson<T>(url, fetchOptions);
+    return { data, usedFallback: false };
   } catch (error) {
     const label = fallbackLabel ?? url;
     const message =
@@ -123,7 +141,7 @@ export async function fetchJsonWithFallback<T>(
     console.warn(
       `[services] Falling back to local data for ${label}: ${message}`,
     );
-    return fallbackData;
+    return { data: fallbackData, usedFallback: true };
   }
 }
 
