@@ -95,6 +95,38 @@ export async function fetchJson<T>(
   }
 }
 
+export interface FetchJsonWithFallbackOptions extends FetchJsonOptions {
+  /**
+   * Human-readable label included in console warnings when fallback data is used.
+   */
+  fallbackLabel?: string;
+}
+
+/**
+ * Fetch JSON from the API and fall back to local data when the request fails.
+ * This is intended for read-only content so the public site can still render
+ * when the API server is unavailable.
+ */
+export async function fetchJsonWithFallback<T>(
+  url: string,
+  fallbackData: T,
+  options: FetchJsonWithFallbackOptions = {},
+): Promise<T> {
+  const { fallbackLabel, ...fetchOptions } = options;
+
+  try {
+    return await fetchJson<T>(url, fetchOptions);
+  } catch (error) {
+    const label = fallbackLabel ?? url;
+    const message =
+      error instanceof Error ? error.message : "Unknown request failure";
+    console.warn(
+      `[services] Falling back to local data for ${label}: ${message}`,
+    );
+    return fallbackData;
+  }
+}
+
 /**
  * Resolve an asset path for display. Use for upload/resume paths that may be
  * relative (e.g. /uploads/foo.png) or absolute (e.g. https://api.example.com/uploads/foo.png).

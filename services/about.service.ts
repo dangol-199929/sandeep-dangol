@@ -1,5 +1,6 @@
 import type { About } from "./types";
-import { apiUrl, fetchJson } from "./api";
+import aboutFallback from "../data/about.json";
+import { apiUrl, fetchJson, fetchJsonWithFallback } from "./api";
 
 const ABOUT_PATH = "/api/about";
 
@@ -30,7 +31,11 @@ function normalizeAbout(data: unknown): About {
  * Fetches about content from GET /api/about.
  */
 export async function getAbout(): Promise<About> {
-  const data = await fetchJson<unknown>(apiUrl(ABOUT_PATH));
+  const data = await fetchJsonWithFallback<unknown>(
+    apiUrl(ABOUT_PATH),
+    aboutFallback,
+    { fallbackLabel: "about" },
+  );
   return normalizeAbout(data);
 }
 

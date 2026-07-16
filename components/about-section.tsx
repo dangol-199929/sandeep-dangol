@@ -86,8 +86,8 @@ export function AboutSection() {
             viewport={{ once: true }}
           >
             <div className="relative">
-              <div className="aspect-[5/5] bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden border border-gray/10">
-                <div className="w-full h-full flex items-center justify-center relative">
+              <div className="aspect-[4/6] bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden border border-gray/10">
+                <div className="w-[full] h-full flex items-center justify-center relative">
                   {imageSrc ? (
                     <img
                       src={imageSrc}
@@ -95,7 +95,7 @@ export function AboutSection() {
                       className="w-full h-full object-cover object-top"
                     />
                   ) : (
-                    <Image src={ME} fill alt="" className="object-cover" />
+                    <Image src={ME} fill alt="" className="object-cover object-top" />
                   )}
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import type { Project } from "./types";
-import { apiUrl } from "./api";
+import projectsFallback from "../data/projects.json";
+import { apiUrl, fetchJson, fetchJsonWithFallback } from "./api";
 
 const PROJECTS_PATH = "/api/projects";
 
@@ -7,11 +8,9 @@ const PROJECTS_PATH = "/api/projects";
  * Fetches all projects.
  */
 export async function getProjects(): Promise<Project[]> {
-  const response = await fetch(apiUrl(PROJECTS_PATH));
-  if (!response.ok) {
-    throw new Error("Failed to fetch projects");
-  }
-  return response.json();
+  return fetchJsonWithFallback<Project[]>(apiUrl(PROJECTS_PATH), projectsFallback, {
+    fallbackLabel: "projects",
+  });
 }
 
 /**
@@ -20,57 +19,32 @@ export async function getProjects(): Promise<Project[]> {
 export async function createProject(
   data: Omit<Project, "id">,
 ): Promise<Project> {
-  const response = await fetch(apiUrl(PROJECTS_PATH), {
+  return fetchJson<Project>(apiUrl(PROJECTS_PATH), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(
-      (error as { error?: string }).error ?? "Failed to create project",
-    );
-  }
-
-  return response.json();
 }
 
 /**
  * Updates an existing project.
  */
 export async function updateProject(data: Project): Promise<Project> {
-  const response = await fetch(apiUrl(PROJECTS_PATH), {
+  return fetchJson<Project>(apiUrl(PROJECTS_PATH), {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(
-      (error as { error?: string }).error ?? "Failed to update project",
-    );
-  }
-
-  return response.json();
 }
 
 /**
  * Deletes a project by id.
  */
 export async function deleteProject(id: string): Promise<void> {
-  const response = await fetch(
+  await fetchJson<unknown>(
     `${apiUrl(PROJECTS_PATH)}?id=${encodeURIComponent(id)}`,
     {
       method: "DELETE",
     },
   );
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(
-      (error as { error?: string }).error ?? "Failed to delete project",
-    );
-  }
 }

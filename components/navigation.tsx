@@ -5,7 +5,7 @@ import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { PDFViewer } from "@/components/pdf-viewer"
-import { getResumePath } from "@/services"
+import { DEFAULT_RESUME_PATH, getResumePath } from "@/services"
 
 const navLinks = [
   { name: "About", href: "#about" },
@@ -20,7 +20,7 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("")
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false)
-  const [resumePath, setResumePath] = useState("/resume/Resume.pdf")
+  const [resumePath, setResumePath] = useState(DEFAULT_RESUME_PATH)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,7 +47,7 @@ export function Navigation() {
   useEffect(() => {
     getResumePath()
       .then(setResumePath)
-      .catch(() => { })
+      .catch(() => setResumePath(DEFAULT_RESUME_PATH))
   }, [])
 
   const scrollToSection = (href: string) => {

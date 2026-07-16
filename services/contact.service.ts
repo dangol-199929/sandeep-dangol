@@ -1,6 +1,7 @@
 import type { ContactItem, ContactItemApi } from "./types";
 import { Mail, Linkedin, Download } from "lucide-react";
-import { apiUrl, fetchJson } from "./api";
+import contactFallback from "../data/contact.json";
+import { apiUrl, fetchJson, fetchJsonWithFallback } from "./api";
 
 const CONTACT_PATH = "/api/contact";
 
@@ -31,7 +32,11 @@ function validateContactItem(item: ContactItemApi): void {
  * Fetches contact items from GET /api/contact.
  */
 export async function getContactItems(): Promise<ContactItemApi[]> {
-  const data = await fetchJson<ContactItemApi[]>(apiUrl(CONTACT_PATH));
+  const data = await fetchJsonWithFallback<ContactItemApi[]>(
+    apiUrl(CONTACT_PATH),
+    contactFallback,
+    { fallbackLabel: "contact" },
+  );
   if (!Array.isArray(data)) return [];
   return data.map((item) => ({
     label: String(item?.label ?? ""),

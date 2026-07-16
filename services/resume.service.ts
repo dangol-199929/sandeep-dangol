@@ -1,15 +1,27 @@
 import type { ResumeResponse } from "./types";
-import { apiUrl, fetchJson, getApiBaseUrl, resolveApiAssetUrl } from "./api";
+import settingsFallback from "../data/settings.json";
+import {
+  apiUrl,
+  fetchJson,
+  fetchJsonWithFallback,
+  getApiBaseUrl,
+  resolveApiAssetUrl,
+} from "./api";
 
 const RESUME_PATH = "/api/resume";
+export const DEFAULT_RESUME_PATH = "/resume/Resume.pdf";
 
 /**
  * Fetches the current resume path from GET /api/resume.
  * Returns a URL suitable for use in href (resolves relative path when API is cross-origin).
  */
 export async function getResumePath(): Promise<string> {
-  const data = await fetchJson<ResumeResponse>(apiUrl(RESUME_PATH));
-  const path = data.resumePath ?? "/resume/Resume.pdf";
+  const data = await fetchJsonWithFallback<ResumeResponse>(
+    apiUrl(RESUME_PATH),
+    settingsFallback,
+    { fallbackLabel: "resume settings" },
+  );
+  const path = data.resumePath ?? DEFAULT_RESUME_PATH;
   return resolveApiAssetUrl(path, getApiBaseUrl());
 }
 
@@ -17,8 +29,12 @@ export async function getResumePath(): Promise<string> {
  * Returns the raw resume path from the API (relative or absolute). Use when you need to store or display the path as returned.
  */
 export async function getResumePathRaw(): Promise<string> {
-  const data = await fetchJson<ResumeResponse>(apiUrl(RESUME_PATH));
-  return data.resumePath ?? "/resume/Resume.pdf";
+  const data = await fetchJsonWithFallback<ResumeResponse>(
+    apiUrl(RESUME_PATH),
+    settingsFallback,
+    { fallbackLabel: "resume settings" },
+  );
+  return data.resumePath ?? DEFAULT_RESUME_PATH;
 }
 
 /**
